@@ -1,0 +1,87 @@
+{
+  "icon": {
+    "path": "./resources/superslick.ico"
+  },
+  "log": {
+    "visable": true,
+    "output": true,
+    "output_path": "./superslick.log"
+  },
+  "tabs": [
+    {
+      "title": "DCC Tools",
+      "contents": [
+        {
+          "title": "Autodesk Maya",
+          "installer": "./batch/installer.bat",
+          "validator": "./batch/validator.bat",
+          "description": "Autodesk Mayaのインストールと各種セットアップを行います。",
+          "icon": "./resources/Maya.png"
+        },
+        {
+          "title": "Zbrush",
+          "description": "Zbrushのインストールを行います。",
+          "installer": "./batch/installer2.bat",
+          "validator": "./batch/validator2.bat",
+          "icon": "./resources/ZBrush.png"
+        },
+        {
+          "title": "Substance Designer",
+          "description": "Substance Designerのインストールを行います。",
+          "installer": "./batch/installer3.bat",
+          "icon": "./resources/substanceDesigner.png"
+        },
+        {
+          "title": "Houdini",
+          "description": "Houdiniと各種セットアップのインストールを行います。",
+          "icon": "./resources/Houdini.png"
+        }
+      ]
+    },
+    {
+      "title": "DCC Tools2",
+      "contents": [
+        { 
+          "title": "World Machine",
+          "description": "World Machineのインストールを行います。",
+          "icon": "./resources/worldMachine.png"
+        },
+        {
+          "title": "Zbrush",
+          "description": "Zbrushのインストールを行います。",
+          "icon": "./resources/ZBrush.png"
+        },
+        {
+          "title": "Substance Designer",
+          "description": "Substance Designerのインストールを行います。",
+          "icon": "./resources/substanceDesigner.png"
+        },
+        {
+          "title": "Substance Painter",
+          "description": "Substance Painterのインストールを行います。",
+          "icon": "./resources/SubstancePainter.png"
+        },
+        {
+          "title": "World Machine",
+          "description": "World Machineのインストールを行います。",
+          "icon": "./resources/worldMachine.png"
+        },
+        {
+          "title": "Houdini",
+          "description": "Houdiniと各種セットアップのインストールを行います。",
+          "icon": "./resources/Houdini.png"
+        }
+      ]
+    },
+    {
+      "title": "DCC Tools3",
+      "contents": [
+        {
+          "title": "Houdini",
+          "description": "Houdiniと各種セットアップのインストールを行います。",
+          "icon": "./resources/Houdini.png"
+        }
+      ]
+    }
+  ]
+}
