@@ -18,7 +18,7 @@ class Window(QtWidgets.QWidget):
         qtab = QtWidgets.QTabWidget()
 
         wid = Contents_Grid_Widget([
-            {"title": "Title2", "installer": "./batch/test.bat"},
+            {"title": "Title2", "installer": "./batch/installer.bat"},
             {"title": "Title2"},
         ])
 
@@ -29,12 +29,12 @@ class Window(QtWidgets.QWidget):
         
 
 class Content_Widget(QtWidgets.QWidget):
-    def __init__(self, title="", description="", icon="./resources/placeholder.png", validater="", installer=""):
+    def __init__(self, title="", description="", icon="./resources/placeholder.png", validator="", installer=""):
         super().__init__()
         self.setAutoFillBackground(True)
         # self.setStyleSheet("background-color:black;")
         # self.setBackgroundRole(QtGui.QPalette.dark)
-        self.validater = os.path.abspath(validater) if os.path.exists(validater) else ""
+        self.validator = os.path.abspath(validator) if os.path.exists(validator) else ""
         self.installer = os.path.abspath(installer) if os.path.exists(installer) else ""
 
         self.setFixedHeight(128+36)
