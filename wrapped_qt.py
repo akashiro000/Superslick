@@ -2,14 +2,6 @@
 
 from PySide2 import QtWidgets, QtGui, QtCore
 
-from typing import Tuple
-
-Size = Tuple[int, int]
-
-
-class MouseEventConnection(QtCore.QObject):
-    _ = QtCore.Signal(QtGui.QMouseEvent)
-
 
 class QIconLabel(QtWidgets.QLabel):
     COLOR = (30, 30, 30)
@@ -59,7 +51,3 @@ class QIconLabel(QtWidgets.QLabel):
 
         self.setPixmap(pixmap)
 
-
-class QRectLabel(QtWidgets.QWidget):
-    def __init__(self, filename=None, size=(128, 128), *args, **kwargs):
-        pass
