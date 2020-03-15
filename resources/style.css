@@ -1,0 +1,29 @@
+* {
+  color: #eee;
+}
+
+.Window {
+    background-color: #222;
+}
+
+.Description_Widget,
+.Install_Button_Widget,
+.QTabWidget,
+.QToolBox,
+.QListWidget,
+.QStackedWidget,
+.QTabWidget::tab,
+.QTabWidget::pane,
+.QTabWidget::tab-bar,
+.QTabBar::tab,
+.QTabBar::pane,
+.QTabBar::tab-bar,
+.Contents_Grid_Widget {
+    background-color: #333;
+}
+.Install_Button_Widget:disabled {
+    color: #777;
+}
+.Content_Widget {
+    background-color: #444;
+}
