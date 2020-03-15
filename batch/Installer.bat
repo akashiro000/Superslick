@@ -1,3 +1,3 @@
 @echo off
 echo hello;
-exit 1 /b;
+exit 0 /b;
