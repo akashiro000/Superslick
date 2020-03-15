@@ -8,68 +8,31 @@ from sys import exit, argv
 from PySide2 import QtWidgets, QtCore, QtGui
 
 from wrapped_qt import QIconLabel
+from config import Config
+
+import argparse
+import json
+
+global parsed_args
+parsed_args = argparse.Namespace()
 
 
 class Window(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("すべすべオイル")
-        self.setWindowIcon(
-            QtGui.QIcon(QtGui.QPixmap(os.path.abspath("./resources/superslick.ico")))
-        )
+
+        icon_path = Config.get("icon")["path"]
+        self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(icon_path)))
 
         hbox = QtWidgets.QHBoxLayout()
         qtab = QtWidgets.QTabWidget()
 
-        wid = Contents_Grid_Widget(
-            [
-                {
-                    "title": "Autodesk Maya",
-                    "installer": "./batch/test.bat",
-                    "description": "Autodesk Mayaのインストールと各種セットアップを行います。",
-                    "icon": "./resources/Maya.png"
-                },
-                {
-                    "title": "Zbrush",
-                    "description": "Zbrushのインストールを行います。",
-                    "icon": "./resources/ZBrush.png"
-                },
-                {
-                    "title": "Substance Designer",
-                    "description": "Substance Designerのインストールを行います。",
-                    "icon": "./resources/substanceDesigner.png"
-                },
-                {
-                    "title": "Substance Painter",
-                    "description": "Substance Painterのインストールを行います。",
-                    "icon": "./resources/SubstancePainter.png"
-                },
-                {
-                    "title": "World Machine",
-                    "description": "World Machineのインストールを行います。",
-                    "icon": "./resources/worldMachine.png"
-                },
-                {
-                    "title": "Houdini",
-                    "description": "Houdiniと各種セットアップのインストールを行います。",
-                    "icon": "./resources/Houdini.png"
-                },
-            ]
-        )
+        for tab in Config.get("tabs", []):
+            title = tab.get("title")
+            wid = Contents_Grid_Widget(tab.get("contents"))
+            qtab.addTab(wid, title)
 
-        wid2 = Contents_Grid_Widget(
-            [
-                {
-                    "title": "Maya",
-                    "installer": "./batch/test.bat",
-                    "description": "testppppppppppppppppppppppppp",
-                },
-                {"title": "Zbrush", "description": "testppppppppppppppppppppppppp"},
-            ]
-        )
-
-        qtab.addTab(wid, "DCC Tools")
-        qtab.addTab(wid2, "Windows")
         qtab.addTab(QtWidgets.QWidget(), "Log")
 
         hbox.addWidget(qtab)
@@ -86,7 +49,6 @@ class Content_Widget(QtWidgets.QWidget):
         validator="",
     ):
         super().__init__()
-        print(title, description, icon, validator, installer)
 
         self.installer = os.path.abspath(installer) if installer else ""
         self.validator = os.path.abspath(validator) if validator else ""
@@ -101,12 +63,12 @@ class Content_Widget(QtWidgets.QWidget):
         description_widget = Description_Widget(description)
 
         icon_widget = QIconLabel(icon, (128, 128))
-        button_widget = Install_Button_Widget(self.installer)
+        self.button_widget = Install_Button_Widget(self.installer, self.validator)
 
         sub_layout = QtWidgets.QVBoxLayout()
         sub_layout.addWidget(description_widget)
-        sub_layout.addWidget(button_widget)
-        sub_layout.setAlignment(button_widget, QtCore.Qt.AlignRight)
+        sub_layout.addWidget(self.button_widget)
+        sub_layout.setAlignment(self.button_widget, QtCore.Qt.AlignRight)
 
         main_layout = QtWidgets.QHBoxLayout()
         main_layout.addWidget(icon_widget)
@@ -120,13 +82,13 @@ class Content_Widget(QtWidgets.QWidget):
         self.validate()
 
     def validate(self):
-        pass
+        self.button_widget.validate()
 
     def paintEvent(self, event):
         opt = QtWidgets.QStyleOption()
         opt.init(self)
-        painter = QtGui.QPainter(self)
-        self.style().drawPrimitive(QtWidgets.QStyle.PE_Widget, opt, painter, self)
+        style = self.style()
+        style.drawPrimitive(QtWidgets.QStyle.PE_Widget, opt, QtGui.QPainter(self), self)
 
 
 class Contents_Grid_Widget(QtWidgets.QWidget):
@@ -136,6 +98,9 @@ class Contents_Grid_Widget(QtWidgets.QWidget):
         grid = QtWidgets.QGridLayout()
         for i, content in enumerate(contents):
             grid.addWidget(Content_Widget(**content), i // 2, i % 2)
+        else:
+            if i == 0:
+                grid.addWidget(Content_Widget(**{"icon": ""}), 0, 1)
 
         grid.setAlignment(QtCore.Qt.AlignTop)
         self.setLayout(grid)
@@ -147,41 +112,51 @@ class Install_Button_Widget(QtWidgets.QPushButton):
         self.installer = installer
         self.validator = validator
 
-        self.setText("Install")
-        self.setFixedWidth(120)
+        self.setText("セットアップ 開始")
+        self.setFixedWidth(160)
         self.clicked.connect(self.install)
-        self.validate()
 
     def install(self):
         self.setEnabled(False)
         try:
-            subprocess.check_output([self.installer])
-            self.succuess()
+            result = subprocess.check_output([self.installer])
+            self.succuess("セットアップ 完了")
         except subprocess.CalledProcessError:
-            self.error()
+            self.error("セットアップ 失敗")
 
-    def error(self):
-        self.setText("Install Failed")
-        self.setStyleSheet("background:#D33;color:white;")
+    def error(self, message=""):
+        if message:
+            self.setText(message)
+        self.setStyleSheet("background:#900;color:white;")
         self.parentWidget().setEnabled(False)
 
-    def succuess(self):
-        self.setText("Installed")
+    def succuess(self, message=""):
+        if message:
+            self.setText(message)
+        self.setStyleSheet("background:#030;")
+        self.parentWidget().setEnabled(False)
+
+    def invalid(self, message=""):
+        if message:
+            self.setText(message)
         self.parentWidget().setEnabled(False)
 
     def validate(self):
         if self.installer == "":
-            self.setText("Not set installer")
-            self.setEnabled(False)
+            self.invalid("未設定")
         elif not pathlib.Path(self.installer).exists():
-            self.setText("Not found installer")
-            self.setEnabled(False)
+            self.error("インストーラーが見つかりません")
 
-        if not self.validator:
-            return
-        elif not pathlib.Path(self.validator).exists():
-            self.setEnabled(False)
-            self.setText("Not found validator")
+        if self.validator:
+            if not pathlib.Path(self.validator).exists():
+                self.error("validatorが見つかりません")
+                return
+
+            try:
+                subprocess.check_output([self.validator])
+                self.succuess("セットアップ 済み")
+            except:
+                pass
 
 
 class Description_Widget(QtWidgets.QTextEdit):
@@ -193,8 +168,21 @@ class Description_Widget(QtWidgets.QTextEdit):
         self.setReadOnly(True)
 
 
+def generate_parser():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "-c", "--config", help="config.jsonのパス", default="./resouces/config.json"
+    )
+    parser.add_argument(
+        "-l", "--log", help="ログをファイルとして出力する。出力するファイルのパス", default="./superslick.log"
+    )
+
+    return parser
+
 
 def main():
+    generate_parser().parse_args()
     app = QtWidgets.QApplication(argv)
 
     window = Window()
